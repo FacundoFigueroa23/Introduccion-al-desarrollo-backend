@@ -1,10 +1,12 @@
 const express = require('express')
+const { requiredScopes } = require('express-oauth2-jwt-bearer')
+
 const Libro = require('../models/Libro.js')
 
 const router = express.Router()
 
 // GET /libros
-router.get('/', async (req, res) => {
+router.get('/', requiredScopes("read:libros"), async (req, res) => {
     try {
         const libros = await Libro.find()
         if (libros.length !== 0) {
@@ -18,7 +20,7 @@ router.get('/', async (req, res) => {
 })
 
 // GET /libros/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', requiredScopes("read:libros"), async (req, res) => {
     try {
         const id = req.params.id
         const libro = await Libro.findById(id)
@@ -29,7 +31,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // POST /libros
-router.post('/', async (req, res) => {
+router.post('/', requiredScopes("write:libros"), async (req, res) => {
     try {
         const {titulo, autor} = req.body
         if (!titulo || !autor) {
@@ -44,7 +46,7 @@ router.post('/', async (req, res) => {
 })
 
 // PUT /libros/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id', requiredScopes("write:libros"), async (req, res) => {
     try {
         const id = req.params.id
         const datos = req.body
@@ -56,7 +58,7 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE /libros/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requiredScopes("write:libros"), async (req, res) => {
     try {
         const id = req.params.id
         await Libro.findByIdAndDelete(id)
